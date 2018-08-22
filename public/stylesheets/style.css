@@ -1,0 +1,25 @@
+body { font-family: Georgia, Times New Roman, serif; }
+#about {
+  z-index: 1000;
+  position: absolute;
+  left: 20px;
+  top: 60px;
+  width: 250px;
+  background: #eee;
+  border: 1px solid #333;
+  padding: 6px;
+}
+
+#render-area {
+  width: 800px;
+  height: 500px;
+  position: static; /* fixed or static */
+  background-color: #333333;
+}
+#tweet {
+  width: 800px;
+  height: 40px;
+  position: static;
+  background-color: #eeeeee;
+  opacity: 1;
+}
