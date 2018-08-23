@@ -1,3 +1,6 @@
 # feelings
 Flocking tweets
-more.... tomorrow ;)
+
+###Install
+clone project 
+npm install

@@ -5,7 +5,6 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 var feelingRouter = require('./routes/feelingsRoute');
 var twitterAPIRouter = require('./routes/twitterAPI');
 
@@ -23,7 +22,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/feelings', feelingRouter);
-app.use('/users', usersRouter);
 app.use('/api/getTweets', twitterAPIRouter);
 
 // catch 404 and forward to error handler
