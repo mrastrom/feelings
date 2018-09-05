@@ -15,3 +15,4 @@ Would appreciate feedback and suggestions.
 - Reduce number of iterations in code
 - Add a nice favicon.ico
 - Adapt for small devices
+- More feelings to recon. (swe lang)

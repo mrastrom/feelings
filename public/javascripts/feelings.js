@@ -1,5 +1,4 @@
 (function ($) {
-    //TODO: load words to find in tweets
     let camera, scene, renderer, planes = {},
         windowWidth,
         windowHeight,
@@ -9,9 +8,10 @@
         maxdepth = 1,
         animating = false;
     let generalFeels = [], loveFeels = [], fearFeels = [], joyFeels = [], sadnesFeelings = [], angerFeelings = [];
-    let mouse = new THREE.Vector3(), radius = 2, INTERSECTED, renderarea;
+    let mouse = new THREE.Vector3(), radius = 5, renderarea;
+    let overCanvas = false;
     let gatherAll = false, mousePressed = false, gatherGeneral = false, hasOneInGrip = false;
-    let lastTime = 0;
+    let fetchTweetsButton,tagInput;
     let planeLocation = Object.freeze({
         LEFT: 0,
         RIGHT: 1,
@@ -21,16 +21,15 @@
     let font;
     let jQuery;
 
-    let trailHeadGeometry = [];
-    trailHeadGeometry.push(
-        new THREE.Vector3( -10.0, 0.0, 0.0 ),
-        new THREE.Vector3( 0.0, 0.0, 0.0 ),
-        new THREE.Vector3( 10.0, 0.0, 0.0 )
-    );
 
-// specify length of trail
-    let trailLength = 300;
-
+    function removeAllBalls(){
+        generalFeels.splice(0,generalFeels.length);
+        loveFeels.splice(0,loveFeels.length)
+        fearFeels.splice(0,fearFeels.length)
+        joyFeels.splice(0,joyFeels.length)
+        sadnesFeelings.splice(0,sadnesFeelings.length)
+        angerFeelings.splice(0,angerFeelings.length)
+    }
 
     class Ball { //Base class
         constructor(feelData, speed, speedLimit, color, font) {
@@ -45,8 +44,8 @@
             //Create this only once!
             this.textGeometry = new THREE.TextGeometry(this.mesh.userData.text, {
                 font: this.font,
-                size: 10,
-                height: 5
+                size: 15,
+                height: 4
             });
             this.textMaterial =  new THREE.MeshBasicMaterial({color: 0xffffff});
             this.textMesh = new THREE.Mesh(this.textGeometry, this.textMaterial);
@@ -300,15 +299,12 @@
         mouseOver() {
             let distance = mouse.distanceTo(this.mesh.position);
             if (distance < radius + 10) {
-                if(!this.isOver){
-                this.isOver = true;
-                //console.log("Distance x:"+mouse.x+ " y:"+ mouse.y);
-
+                if(!this.isOver && overCanvas){
+                    this.isOver = true;
                     this.textMesh.position.x = this.mesh.position.x;
                     this.textMesh.position.y = this.mesh.position.y;
-
-                document.getElementById('tweet').innerHTML = this.mesh.userData.tweetText;
-                scene.add(this.textMesh);
+                    document.getElementById('tweet').innerHTML = this.mesh.userData.tweetText;
+                    scene.add(this.textMesh);
                 }
 
             } else {
@@ -354,6 +350,7 @@
             }
             //Move eractic
             this.acc.set(THREE.Math.randFloatSpread(.5), THREE.Math.randFloatSpread(.5), 0);
+           //console.log('mesh pos x: '+this.mesh.position.x+' y: '+this.mesh.position.y);
         };
 
         allGather() {
@@ -673,7 +670,7 @@
         } else {
             if (window.console) console.log('jQuery v' + jQuery.fn.jquery + ' already loaded!');
         }
-        var fontLoader = new THREE.FontLoader();
+        let fontLoader = new THREE.FontLoader();
         fontLoader.load('fonts/helvetiker_regular.typeface.json', function (response) {
             font = response;
             init();
@@ -689,8 +686,11 @@
         this.mesh = mesh;
     }
 
-    function initDisplay(){
+    function initDisplayArea(){
+        fetchTweetsButton = document.getElementById('button');
+        tagInput = document.getElementById('tagInput');
         renderarea = document.getElementById('render-area');
+        //TODO: check if renderarea element exists
         renderarea.style.cursor = 'crosshair';
         renderer = new THREE.WebGLRenderer({alpha:true});
         renderer.setClearColor( 0x000000, 0 ); // the default
@@ -713,8 +713,10 @@
     }
 
     function initCamera(){
-        camera = new THREE.PerspectiveCamera(75, windowWidth / windowHeight, 0.5, 1000);
-        camera.position.set(0, 0, 325);
+        //camera = new THREE.PerspectiveCamera(90, windowWidth / windowHeight, 0.5, 1000);
+        //camera.position.set(0, 0, 150);
+        camera = new THREE.OrthographicCamera(windowWidth/-2, windowWidth/2, windowHeight/2, windowHeight/-2,0.5, 1000);
+        camera.position.set(0, 0, 10);
     }
 
     function initLight(){
@@ -723,51 +725,71 @@
         pointLight.position.x = 0;
         pointLight.position.y = 0;
         pointLight.position.z = 1000;
-        return pointLight;
+        scene = new THREE.Scene();
+        scene.add(pointLight);
+    }
+
+
+    function initEventListeners(){
+        //TODO: check if fetchTweetsButton element exists
+        fetchTweetsButton.addEventListener('click', onGetTweetsClick, false);
+        renderarea.addEventListener('mousedown', onCanvasMouseDown, false);
+        renderarea.addEventListener('mousemove', onCanvasMouseMove, false);
+        renderarea.addEventListener('mouseup', onCanvasSMouseUp, false);
+        renderarea.addEventListener('mouseover', onMouseOverCanvas, false);
+        renderarea.addEventListener('mouseout',onMouseOutCanvas, false);
+        document.addEventListener('keypress', onKeyPressed, true);
+
+        window.onresize = function(event){
+            refreshDisplay();
+        };
     }
 
     function init() {
         if (window.animationId !== null)
             cancelAnimationFrame(window.animationId);
-        initDisplay();
-
+        initDisplayArea();
         refreshDisplay();
         initCamera();
-        initLight()
-        scene = new THREE.Scene();
-        scene.add(initLight());
+        initLight();
         initPlanes();
-
-
-
-        renderarea.addEventListener('mousedown', onDocumentMouseDown, false);
-        document.addEventListener('mousemove', onDocumentMouseMove, false);
-        renderarea.addEventListener('mouseup', onDocumentMouseUp, false);
-        document.addEventListener('keypress', onKeyPressed, true);
-        window.onresize = function(event){
-            refreshDisplay();
-        };
-
-        // create the trail renderer object
-         trail = new THREE.TrailRenderer( scene, false );
-
-        // create material for the trail renderer
-        trailMaterial = THREE.TrailRenderer.createBaseMaterial();
+        initEventListeners();
 
         fillData();
         animating = true;
         animate();
     }
 
-    function fillData() {
-        jQuery.getJSON('/api/getTweets', function (data) {
-            makeVisualObjects(data);
+    function fillData(aTag) {
+        jQuery.getJSON('/api/getTweets/'+aTag, function (data) {
+            makeATestObject(data);
+            //makeVisualObjects(data);
         });
     }
 
+    function removeAllVisualObjects(){
+        for( let i = scene.children.length - 1; i >= 0; i--) {
+            scene.remove(scene.children[i]);
+        }
+    }
+    function makeATestObject(data){
+        let oneAdded =false;
+        for (index in data) {
+            switch (data[index].type) {
+                case "2": //Joy
+                    feelData = new FeelingPresentationData(data[index].tweetText, data[index].tag);//tweetText, text, type, num
+                    aFeeling = new JoyFeeling(feelData, font);
+                    i = joyFeels.push(aFeeling);
+                    joyFeels[i - 1].mesh.position.add(new THREE.Vector3(THREE.Math.randFloatSpread(maxwidth), THREE.Math.randFloatSpread(maxheight), 0));
+                    scene.add(joyFeels[i - 1].mesh);
+                    oneAdded = true;
+                    break
+            }
+            if(oneAdded) break;
+        }
+    }
+
     function makeVisualObjects(data) {
-        // initialize the trail
-        //trail.initialize( trailMaterial, trailLength, false, 0, trailHeadGeometry, trailTarget );
         for (index in data) {
             switch (data[index].type) {
                 case "1": //Anger
@@ -779,11 +801,9 @@
                 case "2": //Joy
                         feelData = new FeelingPresentationData(data[index].tweetText,data[index].tag);//tweetText, text, type, num
                         aFeeling = new JoyFeeling(feelData, font);
-                        //trail.initialize( trailMaterial, trailLength, false, 0, trailHeadGeometry, aFeeling );
                         i = joyFeels.push(aFeeling);
                         joyFeels[i - 1].mesh.position.add(new THREE.Vector3(THREE.Math.randFloatSpread(maxwidth), THREE.Math.randFloatSpread(maxheight), 0));
                         scene.add(joyFeels[i - 1].mesh);
-                        //trail.activate();
                     break;
                 case "3": //Fear
                         feelData = new FeelingPresentationData(data[index].tweetText,data[index].tag);//tweetText, text, type, num
@@ -814,19 +834,38 @@
         }
     }
 
-    function onDocumentMouseDown(event) {
+    function onGetTweetsClick(event){
+        removeAllBalls();
+        removeAllVisualObjects();
+        if (window.animationId !== null)
+            cancelAnimationFrame(window.animationId);
+        initDisplayArea();
+        refreshDisplay();
+        initCamera();
+        initLight();
+        initPlanes();
+        fillData(tagInput.value);
+    }
+
+    function onCanvasMouseDown(event) {
         mousePressed = true;
         updateMousePosition(event);
     }
 
-    function onDocumentMouseUp(event) {
+    function onCanvasSMouseUp(event) {
         mousePressed = false;
         hasOneInGrip = false;
         updateMousePosition(event);
     }
 
-    function onDocumentMouseMove(event) {
+    function onCanvasMouseMove(event) {
         updateMousePosition(event);
+    }
+    function onMouseOverCanvas(event){
+        overCanvas=true;
+    }
+    function onMouseOutCanvas(event){
+        overCanvas = false;
     }
 
     function onKeyPressed(event) {
@@ -837,28 +876,26 @@
         }
     }
 
+    
     function updateMousePosition(event) {
         event.preventDefault();
-        let pMouse = new THREE.Vector3((event.offsetX/ (renderer.domElement.clientWidth)) * 2.0 - 1.025,
-            -(event.offsetY / (renderer.domElement.clientHeight)) * 2.0 + 1.025,
+        let relX = ((event.offsetX - (renderer.domElement.style.left)));
+        let relY = ((event.offsetY - (renderer.domElement.style.top)));
+        let pMouse = new THREE.Vector3(relX - renderer.domElement.width / 2,
+            -(relY - renderer.domElement.height / 2),
             0);
-        pMouse.unproject(camera);
-        let m = pMouse.z / (pMouse.z - camera.position.z);
-        mouse.x = pMouse.x + (camera.position.x - pMouse.x) * m;
-        mouse.y = pMouse.y + (camera.position.y - pMouse.y) * m;
-        mouse.z = 0;
+        mouse.x = pMouse.x;
+        mouse.y = pMouse.y;
+        mouse.z = pMouse.z;
     }
 
 
     function animate() {
 
         if (animating) {
-            //console.log("elapsed:" + elapsed+ "time:"+now.getTime());
             setTimeout(function () {
-
                 window.animationId = requestAnimationFrame(animate);
-
-            }, 1000 / 30);
+            }, 1000 / 40);
 
             //window.animationId = requestAnimationFrame(animate);
             for (let i = 0; i < generalFeels.length; i++) {
@@ -920,7 +957,7 @@
     }
 
     function initPlane(planeLoc) {
-        var w, h, posx = 0, posy = 0, posz = 0, rotx = 0, roty = 0, rotz = 0;
+        let w, h, posx = 0, posy = 0, posz = 0, rotx = 0, roty = 0, rotz = 0;
 
         switch (planeLoc) {
             case planeLocation.LEFT:
@@ -950,7 +987,7 @@
         }
 
         let geometry = new THREE.PlaneGeometry(w, h);
-        let material = new THREE.MeshLambertMaterial({color: 0xeff2f4, opacity: 0, transparent: true});
+        let material = new THREE.MeshLambertMaterial({color: 0xeff2f4, opacity: 0, transparent: false});
         let planeMesh = new THREE.Mesh(geometry, material);
         planeMesh.position.x = posx;
         planeMesh.position.y = posy;
@@ -962,4 +999,5 @@
         planes[planeLoc] = thePlane;
         scene.add(thePlane.mesh);
     }
+
 })();

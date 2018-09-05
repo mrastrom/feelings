@@ -14,10 +14,10 @@ html
             h1 Welcome to TweetFeels
             p Discover the feelings floating around on Twitter! Change the hashtag and see what people feel about it right now.
         div#int
-            form#hash(action="")
+            div#hash(action="")
                 div #
-                    input#input(type='text' placeholder='twitter hashtag' name='#')
-                    input(type="submit" value="OK")
+                    input#tagInput(type='text' placeholder='twitter hashtag' name='#')
+                    div#button Ok
         div#show
             div#render-area
             article#tweet

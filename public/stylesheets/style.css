@@ -24,6 +24,7 @@ h1{
 }
 
 #input {
+    display: inline;
     border:none;
     border-bottom: 1px solid;
     border-color: linear-gradient(141deg, #9fb8ad 0%, #1fc8db 51%, #2cb5e8 75%);
@@ -45,7 +46,27 @@ input[type=submit] {
     width: 20%;
     margin-left: 3%;
 }
-input[type=submit]:hover{
+div#button{
+    display: inline;
+    font-family: 'Raleway', sans-serif;
+    font-size: .5em;
+    color:white;
+    border: 1px solid white;
+    border-radius: 2px;
+    background-color: black;
+    padding: .4em .5em;
+    width: 20%;
+    margin-left: 3%;
+}
+
+div#button:hover{
+    background-color: #1fc8db;
+    background-image: linear-gradient(141deg, #9fb8ad 0%, #1fc8db 51%, #2cb5e8 75%);
+    border:none;
+}
+
+
+input#tagInput[type=submit]:hover{
 
     background-color: #1fc8db;
     background-image: linear-gradient(141deg, #9fb8ad 0%, #1fc8db 51%, #2cb5e8 75%);
@@ -84,8 +105,8 @@ article#tweet {
     min-width: 400px;
     height: 3em;
     position: static;
-    background-color: #eeeeee;
-    opacity: .6;
+    background-color: #aaaaaa;
+    opacity: 1;
     float: left;
 
 }
@@ -108,13 +129,15 @@ article#tweet {
         padding-top:2em;
     }
 
-    input[type=submit]{
+
+
+    input#tagInput[type=submit]{
         padding: 3%;
         width: 5em;
         margin-right: 1em;
     }
 
-    input[type=text]{
+    input#tagInput[type=text]{
         padding: 2%;
         width: 50%;
         font-size: 0.8em;
@@ -134,7 +157,7 @@ article#tweet {
         width: 100%;
     }
 
-    input#input{
+    input#tagInput{
         max-width: 200px;
     }
 

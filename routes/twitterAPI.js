@@ -12,8 +12,8 @@ function FeelingCVSData(text, type, num) {
 }
 
 function createHashFromCVS(){
-     this.feelingsFromCSV = new Map();
-    fs.readFile( __dirname + '/../data/feelings.csv', function (err, data) {
+    this.feelingsFromCSV = new Map();
+    fs.readFile( __dirname + '/../data/feelings_duo_lang.csv', function (err, data) {
         if (err) {
             throw err;
         }
@@ -40,8 +40,9 @@ function getWordsFromTweet(tweetText){
     return wordArray;
 }
 
-router.get('/', function(req, res){
-
+router.get('/getTweets/:hash_tag', function(req, res){
+    let htag = '#'+req.params.hash_tag;
+    console.log('Asking for tag: '+ htag);
     //console.log(process.env.TWITTER_CONSUMER_KEY);
     let client = new Twitter({
         consumer_key: process.env.TWITTER_CONSUMER_KEY,
@@ -52,14 +53,13 @@ router.get('/', function(req, res){
     });
 
     let feelingsFromCSV = createHashFromCVS();
+    let maxTweetsFromTwitter = 200;
+    let maxDisplayableDataItems = 100;
+    client.get('search/tweets', {q: htag, count: maxTweetsFromTwitter}, function(error, tweets, response) {
 
-    client.get('search/tweets', {q: '#feeling', count: '100'}, function(error, tweets, response) {
-
-        //let returnValues = new Map();
+        console.log('Num tweets from Twitter: '+tweets.statuses.length);
         let returnValues = [];
-
         if (!error) {
-            console.log(JSON.stringify(tweets.statuses));
             //Extract words from tweet
             for(stat in tweets.statuses){
                 let wordsArray = getWordsFromTweet(tweets.statuses[stat].text);
@@ -70,11 +70,11 @@ router.get('/', function(req, res){
                         break;
                     }
                 }
+                if(returnValues.size > maxDisplayableDataItems) break;
             }
 
-            console.log('Number of visual objects: '+ returnValues.length);
+            console.log('Number of data objects for visualization: '+ returnValues.length);
             res.json(returnValues);
-            //res.json(tweets);
         } else {
             res.json({error: 'We have a problem! Pleas try later.'});
             console.log( error );
