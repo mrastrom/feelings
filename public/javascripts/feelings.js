@@ -62,56 +62,12 @@
             let steer = new THREE.Vector3();
             let counter = 0;
             let distance = 0;
-
-            for (let i = 0; i < sadnesFeelings.length; i++) {
-                //walk trough all Generals
-                distance = this.mesh.position.distanceTo(sadnesFeelings[i].mesh.position);
-                if (distance > 0 && distance < 40) {
-                    steer.add(sadnesFeelings[i].speed);
-                    counter++;
-                }
-            }
-            for (let i = 0; i < fearFeels.length; i++) {
-                //walk trough all Generals
-                distance = this.mesh.position.distanceTo(fearFeels[i].mesh.position);
-                if (distance > 0 && distance < 40) {
-                    steer.add(fearFeels[i].speed);
-                    counter++;
-                }
-            }
-            //counter += doAlignBehavior(this, generalFeels, 40, steer);
-            for (let i = 0; i < generalFeels.length; i++) {
-                //walk trough all Generals
-                distance = this.mesh.position.distanceTo(generalFeels[i].mesh.position);
-                if (distance > 0 && distance < 40) {
-                    steer.add(generalFeels[i].speed);
-                    counter++;
-                }
-            }
-
-            for (let i = 0; i < joyFeels.length; i++) {
-                distance = this.mesh.position.distanceTo(joyFeels[i].mesh.position);
-                if (distance > 0 && distance < 40) {
-                    steer.add(joyFeels[i].speed);
-                    counter++;
-                }
-            }
-
-            for (let i = 0; i < loveFeels.length; i++) {
-                distance = this.mesh.position.distanceTo(loveFeels[i].mesh.position);
-                if (distance > 0 && distance < 60) {
-                    steer.add(loveFeels[i].speed);
-                    counter++;
-                }
-            }
-
-            for (let i = 0; i < angerFeelings.length; i++) {
-                distance = this.mesh.position.distanceTo(angerFeelings[i].mesh.position);
-                if (distance > 0 && distance < 10) {
-                    steer.add(angerFeelings[i].speed);
-                    counter++;
-                }
-            }
+            counter += doAlignBehavior(this, sadnesFeelings, 40, steer);
+            counter += doAlignBehavior(this, fearFeels, 40, steer);
+            counter += doAlignBehavior(this, generalFeels, 40, steer);
+            counter += doAlignBehavior(this, joyFeels, 40, steer);
+            counter += doAlignBehavior(this, loveFeels, 40, steer);
+            counter += doAlignBehavior(this, angerFeelings, 40, steer);
             if (counter > 0) {
                 steer.divideScalar(counter);
             }
@@ -129,93 +85,53 @@
             let steer = new THREE.Vector3();
             let distance = 0;
             let counter = 0;
+            if (this.mesh.position.z > 0) {
+                console.log("floating in z-plane z:" + this.mesh.position.z);
+            }
             for (let i = 0; i < angerFeelings.length; i++) {
                 distance = this.mesh.position.distanceTo(angerFeelings[i].mesh.position);
-                if (this.mesh.position.z > 0) {
-                    console.log("floating in z-plane z:" + this.mesh.position.z);
-                }
                 if (distance > 0 && distance < 10) {
-                    let diff = new THREE.Vector3();
-                    diff.subVectors(this.mesh.position, angerFeelings[i].mesh.position);
-                    diff.normalize();
-                    diff.divideScalar(distance);
-                    steer.add(diff);
+                    steer.add(this.doSeparationDiff(angerFeelings[i], distance));
                     counter++;
                 }
             }
 
             for (let i = 0; i < joyFeels.length; i++) {
                 distance = this.mesh.position.distanceTo(joyFeels[i].mesh.position);
-                if (this.mesh.position.z > 0) {
-                    console.log("floating in z-plane z:" + this.mesh.position.z);
-                }
                 if (distance > 0 && distance < 10) {
-                    let diff = new THREE.Vector3();
-                    diff.subVectors(this.mesh.position, joyFeels[i].mesh.position);
-                    diff.normalize();
-                    diff.divideScalar(distance);
-                    steer.add(diff);
+                    steer.add(this.doSeparationDiff(joyFeels[i], distance));
                     counter++;
                 }
             }
 
             for (let i = 0; i < fearFeels.length; i++) {
                 distance = this.mesh.position.distanceTo(fearFeels[i].mesh.position);
-                if (this.mesh.position.z > 0) {
-                    console.log("floating in z-plane z:" + this.mesh.position.z);
-                }
                 if (distance > 0 && distance < 15) {
-                    let diff = new THREE.Vector3();
-                    diff.subVectors(this.mesh.position, fearFeels[i].mesh.position);
-                    diff.normalize();
-                    diff.divideScalar(distance);
-                    steer.add(diff);
+                    steer.add(this.doSeparationDiff(fearFeels[i], distance));
                     counter++;
                 }
             }
 
             for (let i = 0; i < generalFeels.length; i++) {
                 distance = this.mesh.position.distanceTo(generalFeels[i].mesh.position);
-                if (this.mesh.position.z > 0) {
-                    console.log("floating in z-plane z:" + this.mesh.position.z);
-                }
                 if (distance > 0 && distance < 8) {
-                    let diff = new THREE.Vector3();
-                    diff.subVectors(this.mesh.position, generalFeels[i].mesh.position);
-                    diff.normalize();
-                    diff.divideScalar(distance);
-                    //console.log("diff:"+ diff.x +" "+ diff.y +" "+ diff.z);
-                    steer.add(diff);
+                    steer.add(this.doSeparationDiff(generalFeels[i], distance));
                     counter++;
                 }
             }
 
             for (let i = 0; i < loveFeels.length; i++) {
                 distance = this.mesh.position.distanceTo(loveFeels[i].mesh.position);
-                if (this.mesh.position.z > 0) {
-                    console.log("floating in z-plane z:" + this.mesh.position.z);
-                }
                 if (distance > 0 && distance < 15) {
-                    let diff = new THREE.Vector3();
-                    diff.subVectors(this.mesh.position, loveFeels[i].mesh.position);
-                    diff.normalize();
-                    diff.divideScalar(distance);
-                    steer.add(diff);
+                    steer.add(this.doSeparationDiff(loveFeels[i], distance));
                     counter++;
                 }
             }
 
             for (let i = 0; i < sadnesFeelings.length; i++) {
                 distance = this.mesh.position.distanceTo(sadnesFeelings[i].mesh.position);
-                if (this.mesh.position.z > 0) {
-                    console.log("floating in z-plane z:" + this.mesh.position.z);
-                }
                 if (distance > 0 && distance < 25) {
-                    let diff = new THREE.Vector3();
-                    diff.subVectors(this.mesh.position, sadnesFeelings[i].mesh.position);
-                    diff.normalize();
-                    diff.divideScalar(distance);
-                    steer.add(diff);
+                    steer.add(this.doSeparationDiff(sadnesFeelings[i], distance));
                     counter++;
                 }
             }
@@ -226,6 +142,16 @@
             steer.multiplyScalar(magnitude);
             this.acc.add(steer);
         };
+
+        doSeparationDiff(aFeeling, distance){
+            let diff = new THREE.Vector3();
+            diff.subVectors(this.mesh.position, aFeeling.mesh.position);
+            diff.normalize();
+            diff.divideScalar(distance);
+            return diff;
+        }
+
+
 
         //Cohesion - ger bollen dragningskraft mot närliggande bollar
         cohesionBehavior(magnitude) {
@@ -288,10 +214,10 @@
         updatePlaneCollision() {
             let radius = this.mesh.geometry.parameters.radius;
             if (this.mesh.position.x >= (maxwidth - radius) || this.mesh.position.x <= -(maxwidth - radius)) {
-                this.speed.setX(this.speed.x * (-1));
+                this.speed.setX(this.speed.x * (-1.5));
             }
             if (this.mesh.position.y >= (maxheight - radius) || this.mesh.position.y <= -(maxheight - radius)) {
-                this.speed.setY(this.speed.y * (-1));
+                this.speed.setY(this.speed.y * (-1.5));
             }
         };
 
@@ -690,7 +616,7 @@
         fetchTweetsButton = document.getElementById('button');
         tagInput = document.getElementById('tagInput');
         renderarea = document.getElementById('render-area');
-        //TODO: check if renderarea element exists
+        //TODO: check if elements exists
         renderarea.style.cursor = 'crosshair';
         renderer = new THREE.WebGLRenderer({alpha:true});
         renderer.setClearColor( 0x000000, 0 ); // the default
@@ -762,8 +688,8 @@
 
     function fillData(aTag) {
         jQuery.getJSON('/api/getTweets/'+aTag, function (data) {
-            makeATestObject(data);
-            //makeVisualObjects(data);
+            //makeATestObject(data);
+            makeVisualObjects(data);
         });
     }
 
@@ -895,9 +821,8 @@
         if (animating) {
             setTimeout(function () {
                 window.animationId = requestAnimationFrame(animate);
-            }, 1000 / 40);
+            }, 1000 / 50);
 
-            //window.animationId = requestAnimationFrame(animate);
             for (let i = 0; i < generalFeels.length; i++) {
                 generalFeels[i].runIt();
             }
