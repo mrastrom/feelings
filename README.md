@@ -1,6 +1,8 @@
 # TweetFeels
 Flocking tweets according to expressed feelings.
 
+## Getting Started
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 ### Install
 - git clone https://github.com/mrastrom/feelings.git 
 - npm install
@@ -16,3 +18,32 @@ Would appreciate feedback and suggestions.
 - Add a nice favicon.ico
 - Adapt for small devices
 - More feelings to recon. (swe lang)
+
+### Prerequisites
+
+
+### Installing
+
+## Running the tests
+
+## Authors
+
+## License
+
+
+## Acknowledgments
+
+
+## Built With
+
+
+## Contributing
+
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning.
+
+## Authors
+
+## Acknowledgments
+
