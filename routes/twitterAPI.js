@@ -56,8 +56,7 @@ router.get('/getTweets/:hash_tag', function(req, res){
     let maxTweetsFromTwitter = 200;
     let maxDisplayableDataItems = 100;
     client.get('search/tweets', {q: htag, count: maxTweetsFromTwitter}, function(error, tweets, response) {
-
-        console.log('Num tweets from Twitter: '+tweets.statuses.length);
+        console.log('Num tweets from Twitter: ' + tweets.statuses.length);
         let returnValues = [];
         if (!error) {
             //Extract words from tweet

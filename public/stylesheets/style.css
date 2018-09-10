@@ -97,7 +97,7 @@ div#render-area {
     margin-top: 1em;
     display: block;
     position: static; /* fixed or static */
-    background-color: #333333;
+    background-color: black;
     float: left;
 }
 article#tweet {

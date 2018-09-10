@@ -61,7 +61,6 @@
         alignBehavior(magnitude) {
             let steer = new THREE.Vector3();
             let counter = 0;
-            let distance = 0;
             counter += doAlignBehavior(this, sadnesFeelings, 40, steer);
             counter += doAlignBehavior(this, fearFeels, 40, steer);
             counter += doAlignBehavior(this, generalFeels, 40, steer);
@@ -91,7 +90,7 @@
             for (let i = 0; i < angerFeelings.length; i++) {
                 distance = this.mesh.position.distanceTo(angerFeelings[i].mesh.position);
                 if (distance > 0 && distance < 10) {
-                    steer.add(this.doSeparationDiff(angerFeelings[i], distance));
+                    steer.add(this.getDiffVector(angerFeelings[i], distance));
                     counter++;
                 }
             }
@@ -99,7 +98,7 @@
             for (let i = 0; i < joyFeels.length; i++) {
                 distance = this.mesh.position.distanceTo(joyFeels[i].mesh.position);
                 if (distance > 0 && distance < 10) {
-                    steer.add(this.doSeparationDiff(joyFeels[i], distance));
+                    steer.add(this.getDiffVector(joyFeels[i], distance));
                     counter++;
                 }
             }
@@ -107,7 +106,7 @@
             for (let i = 0; i < fearFeels.length; i++) {
                 distance = this.mesh.position.distanceTo(fearFeels[i].mesh.position);
                 if (distance > 0 && distance < 15) {
-                    steer.add(this.doSeparationDiff(fearFeels[i], distance));
+                    steer.add(this.getDiffVector(fearFeels[i], distance));
                     counter++;
                 }
             }
@@ -115,7 +114,7 @@
             for (let i = 0; i < generalFeels.length; i++) {
                 distance = this.mesh.position.distanceTo(generalFeels[i].mesh.position);
                 if (distance > 0 && distance < 8) {
-                    steer.add(this.doSeparationDiff(generalFeels[i], distance));
+                    steer.add(this.getDiffVector(generalFeels[i], distance));
                     counter++;
                 }
             }
@@ -123,7 +122,7 @@
             for (let i = 0; i < loveFeels.length; i++) {
                 distance = this.mesh.position.distanceTo(loveFeels[i].mesh.position);
                 if (distance > 0 && distance < 15) {
-                    steer.add(this.doSeparationDiff(loveFeels[i], distance));
+                    steer.add(this.getDiffVector(loveFeels[i], distance));
                     counter++;
                 }
             }
@@ -131,7 +130,7 @@
             for (let i = 0; i < sadnesFeelings.length; i++) {
                 distance = this.mesh.position.distanceTo(sadnesFeelings[i].mesh.position);
                 if (distance > 0 && distance < 25) {
-                    steer.add(this.doSeparationDiff(sadnesFeelings[i], distance));
+                    steer.add(this.getDiffVector(sadnesFeelings[i], distance));
                     counter++;
                 }
             }
@@ -143,7 +142,7 @@
             this.acc.add(steer);
         };
 
-        doSeparationDiff(aFeeling, distance){
+        getDiffVector(aFeeling, distance){
             let diff = new THREE.Vector3();
             diff.subVectors(this.mesh.position, aFeeling.mesh.position);
             diff.normalize();
@@ -194,7 +193,7 @@
             }
             for (let i = 0; i < angerFeelings.length; i++) {
                 let distance = this.mesh.position.distanceTo(angerFeelings[i].mesh.position);
-                if (distance > 0 && distance < 50) {
+                if (distance > 0 && distance < 40) {
                     sum.add(angerFeelings[i].mesh.position);
                     counter++;
                 }
@@ -333,7 +332,7 @@
         };
 
         flock() {
-            this.separationBehavior(3);
+            this.separationBehavior(5);
             this.cohesionBehavior(0.4);
             this.alignBehavior(0);
         };
@@ -466,7 +465,7 @@
      */
     class GeneralFeeling extends Ball {
         constructor(feelData, font) {
-            super(feelData, new THREE.Vector3(THREE.Math.randFloatSpread(4), THREE.Math.randFloatSpread(4), 0), 3, 0xffffff, font);
+            super(feelData, new THREE.Vector3(THREE.Math.randFloatSpread(3), THREE.Math.randFloatSpread(3), 0), 3, 0xffffff, font);
         }
 
         runIt() {
@@ -507,7 +506,7 @@
                 this.mesh.position.add(this.speed);
             }
             //Move eractic
-            this.acc.set(THREE.Math.randFloatSpread(.5), THREE.Math.randFloatSpread(.5), 0);
+            this.acc.set(THREE.Math.randFloatSpread(.2), THREE.Math.randFloatSpread(.2), 0);
         };
 
         //Om gatherAll är true så söker alla generella bollar sig till varandra
