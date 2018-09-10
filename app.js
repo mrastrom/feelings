@@ -20,8 +20,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/feelings', feelingRouter);
+app.use('/test', indexRouter);
+app.use('/', feelingRouter);
 app.use('/api', twitterAPIRouter);
 
 // catch 404 and forward to error handler

@@ -582,9 +582,10 @@
     }
 
     window.onload = function () {
+        let proto = location.protocol;
         //Load jQuery version 3.2.0 if it isn't already loaded.
         if (typeof jQuery == 'undefined' || window.jQuery.fn.jquery !== '3.2.0') {
-            getScript('http://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.js', function () {
+            getScript(proto+'//ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.js', function () {
                 if (typeof window.jQuery == 'undefined') {
                     if (window.console) console.log('Sorry, but jQuery wasn\'t able to load');
                 } else {
