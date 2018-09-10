@@ -665,6 +665,7 @@
         renderarea.addEventListener('mouseover', onMouseOverCanvas, false);
         renderarea.addEventListener('mouseout',onMouseOutCanvas, false);
         document.addEventListener('keypress', onKeyPressed, true);
+        tagInput.addEventListener('keyup', onTweetsButtonUp, true)
 
         window.onresize = function(event){
             refreshDisplay();
@@ -799,6 +800,13 @@
             gatherAll = true;
         } else {
             gatherAll = false
+        }
+    }
+
+    function onTweetsButtonUp(event){
+        event.preventDefault();
+        if(event.keyCode === 13){
+            fetchTweetsButton.click();
         }
     }
 
